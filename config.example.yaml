@@ -1,0 +1,16 @@
+# Gmail auth configuration
+# oauth2 client secret file generated in Google Cloud Console
+secretFile: "client_secret.json"
+# Where to store the token. This must be writeable by the application
+tokenFile: "token.json"
+
+# Put your Slack webhook URL here
+slackUrl: "https://hooks.slack.com/services/..."
+
+# If true then archive messages after posting to Slack (remove them from the inbox)
+archiveSentMessages: true
+
+# Map of gmail label to Slack channel
+labelChannels:
+  Test label: test-channel
+  Other Label: other-channel
