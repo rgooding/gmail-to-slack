@@ -3,7 +3,6 @@ package gmailclient
 import (
 	"context"
 	"encoding/base64"
-	"fmt"
 	"github.com/rgooding/gmail-to-slack/config"
 	"google.golang.org/api/gmail/v1"
 	"google.golang.org/api/option"
@@ -72,7 +71,8 @@ func ListUnreadMessages(labelIds []string) ([]ParsedMessage, error) {
 		}
 		body, err := base64.StdEncoding.DecodeString(msg.Payload.Body.Data)
 		if err != nil {
-			return nil, fmt.Errorf("error decoding body of message %s: %s", msgId, err.Error())
+			log.Printf("Error decoding body of message %s: %s", msgId, err.Error())
+			continue
 		}
 
 		subject := ""
