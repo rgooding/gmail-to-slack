@@ -69,7 +69,7 @@ func ListUnreadMessages(labelIds []string) ([]ParsedMessage, error) {
 		if err != nil {
 			return nil, err
 		}
-		body, err := base64.StdEncoding.DecodeString(msg.Payload.Body.Data)
+		body, err := base64.URLEncoding.DecodeString(msg.Payload.Body.Data)
 		if err != nil {
 			log.Printf("Error decoding body of message %s: %s", msgId, err.Error())
 			continue
