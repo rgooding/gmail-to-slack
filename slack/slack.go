@@ -10,17 +10,31 @@ import (
 )
 
 func Send(channel, sender, subject, body string) error {
+	fullMsg := subject + "\n```" + body + "```"
+	messages := chunkString(fullMsg, 3900)
+	l := len(messages)
+	if l > 1 {
+		messages[0] += "```"
+		for i := 1; i < l-1; i++ {
+			messages[i] = "```" + messages[i] + "```"
+		}
+		messages[l-1] = "```" + messages[l-1]
+	}
+	for _, m := range messages {
+		err := sendMsg(channel, sender, m)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func sendMsg(channel, sender, body string) error {
 	payload := map[string]interface{}{
-		"channel":    "#" + channel,
-		"icon_emoji": ":information_source:",
-		"username":   sender,
-		"text":       subject,
-		"attachments": []map[string]interface{}{
-			{
-				"id":   1,
-				"text": "```" + body + "```",
-			},
-		},
+		"channel":      "#" + channel,
+		"icon_emoji":   ":information_source:",
+		"username":     sender,
+		"text":         body,
 		"unfurl_links": false,
 		"unfurl_media": false,
 	}
@@ -44,4 +58,21 @@ func Send(channel, sender, subject, body string) error {
 		return fmt.Errorf("received HTTP response code %d: %s", res.StatusCode, content)
 	}
 	return nil
+}
+
+func chunkString(s string, chunkSize int) []string {
+	l := len(s)
+	if l <= chunkSize {
+		return []string{s}
+	}
+
+	var chunks []string
+	for i := 0; i < l; i += chunkSize {
+		end := i + chunkSize
+		if end > l-1 {
+			end = l
+		}
+		chunks = append(chunks, s[i:end])
+	}
+	return chunks
 }

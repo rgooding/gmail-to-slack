@@ -16,14 +16,15 @@ type Config struct {
 }
 
 var loadedCfg *Config
+var ConfFile = "config.yaml"
 
 func Load() *Config {
 	if loadedCfg == nil {
-		confFile := os.Getenv("CONFIG_FILE")
-		if confFile == "" {
-			confFile = "config.yaml"
+		envFile := os.Getenv("CONFIG_FILE")
+		if envFile != "" {
+			ConfFile = envFile
 		}
-		contents, err := ioutil.ReadFile(confFile)
+		contents, err := ioutil.ReadFile(ConfFile)
 		if err != nil {
 			log.Fatal(err)
 		}
