@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path"
 )
 
 type Config struct {
@@ -16,13 +17,21 @@ type Config struct {
 }
 
 var loadedCfg *Config
-var ConfFile = "config.yaml"
+var ConfFile = ""
 
 func Load() *Config {
 	if loadedCfg == nil {
-		envFile := os.Getenv("CONFIG_FILE")
-		if envFile != "" {
-			ConfFile = envFile
+		if ConfFile == "" {
+			// Look for config.yaml in the current working directory then the executable's directory
+			if _, err := os.Stat("config.yaml"); err == nil {
+				ConfFile = "config.yaml"
+			} else {
+				ConfFile = path.Join(path.Dir(os.Args[0]), "config.yaml")
+			}
+			envFile := os.Getenv("CONFIG_FILE")
+			if envFile != "" {
+				ConfFile = envFile
+			}
 		}
 		contents, err := ioutil.ReadFile(ConfFile)
 		if err != nil {
