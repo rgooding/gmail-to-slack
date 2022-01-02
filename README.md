@@ -16,7 +16,7 @@ tested with go 1.15 on Linux.
 
 ### Configuration
 
-There are some prerequisites which neeed to be set up before configuring the tool.
+There are some prerequisites which need to be set up before configuring the tool.
 
 #### Slack webhook URL
 This is a standard incoming-webhook URL for Slack. The channel associated with
