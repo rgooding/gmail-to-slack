@@ -10,17 +10,13 @@ import (
 )
 
 func Send(channel, sender, subject, body string) error {
-	fullMsg := subject + "\n```" + body + "```"
-	messages := chunkString(fullMsg, 3900)
-	l := len(messages)
-	if l > 1 {
-		messages[0] += "```"
-		for i := 1; i < l-1; i++ {
-			messages[i] = "```" + messages[i] + "```"
-		}
-		messages[l-1] = "```" + messages[l-1]
+	bodyParts := chunkMessage(body)
+	bodyParts[0] = subject + "\n```" + bodyParts[0] + "```"
+	for i := 1; i < len(bodyParts); i++ {
+		bodyParts[i] = "```" + bodyParts[i] + "```"
 	}
-	for _, m := range messages {
+
+	for _, m := range bodyParts {
 		err := sendMsg(channel, sender, m)
 		if err != nil {
 			return err
@@ -60,19 +56,35 @@ func sendMsg(channel, sender, body string) error {
 	return nil
 }
 
-func chunkString(s string, chunkSize int) []string {
+func chunkMessage(s string) []string {
+	const chunkSize = 3800
+	const maxJitter = 100
+
 	l := len(s)
 	if l <= chunkSize {
 		return []string{s}
 	}
-
 	var chunks []string
-	for i := 0; i < l; i += chunkSize {
-		end := i + chunkSize
-		if end > l-1 {
+	start := 0
+	for start < l {
+		end := start + chunkSize
+		if end >= l-1 {
 			end = l
+		} else {
+			// work backwards to find the last newline
+			newEnd := end
+			found := false
+			for !found && end-newEnd < maxJitter {
+				if s[newEnd-1] == '\n' {
+					found = true
+				} else {
+					newEnd--
+				}
+			}
+			end = newEnd
 		}
-		chunks = append(chunks, s[i:end])
+		chunks = append(chunks, s[start:end])
+		start = end
 	}
 	return chunks
 }
