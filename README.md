@@ -12,7 +12,7 @@ environment variable.
 
 ### Building from source
 To build just download the source and run `go build`. Currently it has only been
-tested with go 1.15 on Linux.
+tested with go 1.16 on Linux.
 
 ### Configuration
 
