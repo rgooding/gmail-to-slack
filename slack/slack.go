@@ -57,7 +57,7 @@ func sendMsg(channel, sender, body string) error {
 }
 
 func chunkMessage(s string) []string {
-	const chunkSize = 3800
+	const chunkSize = 2500
 	const maxJitter = 100
 
 	l := len(s)
