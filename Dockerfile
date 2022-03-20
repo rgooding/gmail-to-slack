@@ -1,4 +1,4 @@
-FROM golang:1.16-buster AS builder
+FROM golang:1.17-bullseye AS builder
 
 # Pre-cache modules
 COPY go.mod /buildtmp/go.mod
@@ -12,7 +12,7 @@ RUN go build
 RUN go build cmd/pipemsg/pipemsg.go
 
 
-FROM debian:buster
+FROM debian:bullseye
 RUN apt-get -y update && apt-get -y install ca-certificates && apt-get -y clean
 COPY --from=builder /workspace/gmail-to-slack /gmail-to-slack
 COPY --from=builder /workspace/pipemsg /pipemsg
