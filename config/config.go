@@ -1,11 +1,11 @@
 package config
 
 import (
-	"gopkg.in/yaml.v2"
-	"io/ioutil"
 	"log"
 	"os"
 	"path"
+
+	"gopkg.in/yaml.v2"
 )
 
 type Config struct {
@@ -33,7 +33,7 @@ func Load() *Config {
 				ConfFile = envFile
 			}
 		}
-		contents, err := ioutil.ReadFile(ConfFile)
+		contents, err := os.ReadFile(ConfFile)
 		if err != nil {
 			log.Fatal(err)
 		}

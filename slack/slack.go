@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/rgooding/gmail-to-slack/config"
@@ -53,7 +53,7 @@ func sendMsg(channel, sender, body string) error {
 		return err
 	}
 	defer res.Body.Close()
-	content, err := ioutil.ReadAll(res.Body)
+	content, err := io.ReadAll(res.Body)
 	if err != nil {
 		return fmt.Errorf("error reading HTTP response body: %s", err.Error())
 	}

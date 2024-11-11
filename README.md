@@ -28,10 +28,10 @@ required by the tool is `https://www.googleapis.com/auth/gmail.modify`.
 
 The basic steps are: 
 1. Create a project
-1. Enable the Gmail API
-1. Configure the Consent Screen
-1. Generate an OAuth 2.0 Client ID.
-1. Download the json secret file from the Credentials page.
+2. Enable the Gmail API
+3. Configure the Consent Screen
+4. Generate an OAuth 2.0 Client ID.
+5. Download the json secret file from the Credentials page.
 
 There is a more detailed step-by-step of how to configure the OAuth 2.0 
 settings in this tutorial for `gphotos-sync`:

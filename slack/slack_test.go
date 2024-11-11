@@ -1,10 +1,11 @@
 package slack
 
 import (
-	"github.com/rgooding/gmail-to-slack/config"
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/rgooding/gmail-to-slack/config"
 )
 
 func TestSlack(t *testing.T) {

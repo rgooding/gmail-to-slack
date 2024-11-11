@@ -4,12 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
-	"io/ioutil"
 	"log"
 	"os"
 	"time"
+
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 )
 
 type TokenSource struct {
@@ -61,7 +61,7 @@ func (t *TokenSource) Token() (*oauth2.Token, error) {
 
 func (t *TokenSource) oauthConfig() (*oauth2.Config, error) {
 	if t.cfg == nil {
-		secret, err := ioutil.ReadFile(t.secretFile)
+		secret, err := os.ReadFile(t.secretFile)
 		if err != nil {
 			return nil, err
 		}

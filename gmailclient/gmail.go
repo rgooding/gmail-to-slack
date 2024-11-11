@@ -3,11 +3,12 @@ package gmailclient
 import (
 	"context"
 	"encoding/base64"
+	"log"
+	"strings"
+
 	"github.com/rgooding/gmail-to-slack/config"
 	"google.golang.org/api/gmail/v1"
 	"google.golang.org/api/option"
-	"log"
-	"strings"
 )
 
 const scope = "https://www.googleapis.com/auth/gmail.modify"

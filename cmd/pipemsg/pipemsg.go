@@ -7,12 +7,13 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/rgooding/gmail-to-slack/slack"
-	"io/ioutil"
+	"io"
 	"mime/quotedprintable"
 	"net/mail"
 	"os"
 	"strings"
+
+	"github.com/rgooding/gmail-to-slack/slack"
 )
 
 func fatal(f string, v ...interface{}) {
@@ -39,11 +40,11 @@ func main() {
 	var body []byte
 	switch strings.ToLower(msg.Header.Get("Content-Transfer-Encoding")) {
 	case "quoted-printable":
-		body, err = ioutil.ReadAll(quotedprintable.NewReader(msg.Body))
+		body, err = io.ReadAll(quotedprintable.NewReader(msg.Body))
 	case "base64":
-		body, err = ioutil.ReadAll(base64.NewDecoder(base64.URLEncoding, msg.Body))
+		body, err = io.ReadAll(base64.NewDecoder(base64.URLEncoding, msg.Body))
 	default:
-		body, err = ioutil.ReadAll(msg.Body)
+		body, err = io.ReadAll(msg.Body)
 	}
 	if err != nil {
 		fatal("Error reading message body: %s", err.Error())

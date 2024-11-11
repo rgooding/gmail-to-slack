@@ -1,11 +1,12 @@
 package main
 
 import (
+	"log"
+	"strings"
+
 	"github.com/rgooding/gmail-to-slack/config"
 	"github.com/rgooding/gmail-to-slack/gmailclient"
 	"github.com/rgooding/gmail-to-slack/slack"
-	"log"
-	"strings"
 )
 
 func main() {
