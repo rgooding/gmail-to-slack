@@ -10,7 +10,22 @@ import (
 	"github.com/rgooding/gmail-to-slack/config"
 )
 
+// Messages longer than chunkSize will be split into multiple messages of this length
+const chunkSize = 2400
+
+// Messages longer than maxMessageSize will be truncated
+const maxMessageSize = 10 * chunkSize
+
 func Send(channel, sender, subject, body string) error {
+	if len(body) > maxMessageSize {
+		chunks := chunkMessage(body)
+		msg := subject + "\n" +
+			"_Message truncated. See email for the full contents_\n" +
+			"```" + chunks[0] + "```" +
+			"\n_...truncated..._\n"
+		return sendMsg(channel, sender, msg)
+	}
+
 	bodyParts := chunkMessage(body)
 
 	n := len(bodyParts)
@@ -64,7 +79,6 @@ func sendMsg(channel, sender, body string) error {
 }
 
 func chunkMessage(s string) []string {
-	const chunkSize = 2400
 	const maxJitter = 100
 
 	l := len(s)
