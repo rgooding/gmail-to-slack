@@ -4,16 +4,23 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/rgooding/gmail-to-slack/config"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/rgooding/gmail-to-slack/config"
 )
 
 func Send(channel, sender, subject, body string) error {
 	bodyParts := chunkMessage(body)
-	bodyParts[0] = subject + "\n```" + bodyParts[0] + "```"
-	for i := 1; i < len(bodyParts); i++ {
-		bodyParts[i] = "```" + bodyParts[i] + "```"
+
+	n := len(bodyParts)
+	if n > 1 {
+		bodyParts[0] = subject + fmt.Sprintf(" _(1/%d)_\n", n) + "```" + bodyParts[0] + "```"
+		for i := 1; i < n; i++ {
+			bodyParts[i] = subject + fmt.Sprintf(" _(%d/%d)_\n", i+1, n) + "```" + bodyParts[i] + "```"
+		}
+	} else {
+		bodyParts[0] = subject + "\n```" + bodyParts[0] + "```"
 	}
 
 	for _, m := range bodyParts {
@@ -57,7 +64,7 @@ func sendMsg(channel, sender, body string) error {
 }
 
 func chunkMessage(s string) []string {
-	const chunkSize = 2500
+	const chunkSize = 2400
 	const maxJitter = 100
 
 	l := len(s)
