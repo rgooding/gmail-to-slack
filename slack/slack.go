@@ -83,7 +83,7 @@ func sendMsg(channel, sender, body string) error {
 			err := json.Unmarshal(content, &resp)
 			if err != nil {
 				log.Printf("Error unmarshalling response from Slack: %s", err.Error())
-			} else if secs, ok := resp["retry_after"].(int); ok && secs > 0 {
+			} else if secs, ok := resp["retry_after"].(float64); ok && secs > 0 {
 				sleepTime = time.Duration(secs) * time.Second
 			}
 			log.Printf("Slack rate-limited, sleeping %d seconds", int(sleepTime.Seconds()))
