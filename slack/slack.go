@@ -3,9 +3,12 @@ package slack
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/rgooding/gmail-to-slack/config"
 )
@@ -62,20 +65,51 @@ func sendMsg(channel, sender, body string) error {
 		return err
 	}
 
+	var sleepTime time.Duration
+	n := 0
+	for {
+		statusCode, content, err := sendRequest(jsonPayload)
+		if err != nil {
+			return err
+		}
+		if statusCode == 429 {
+			n++
+			if n > 10 {
+				return errors.New("too many retries")
+			}
+			// work out how long to sleep, default to 2 seconds
+			sleepTime = 2 * time.Second
+			var resp map[string]interface{}
+			err := json.Unmarshal(content, &resp)
+			if err != nil {
+				log.Printf("Error unmarshalling response from Slack: %s", err.Error())
+			} else if secs, ok := resp["retry_after"].(int); ok && secs > 0 {
+				sleepTime = time.Duration(secs) * time.Second
+			}
+			log.Printf("Slack rate-limited, sleeping %d seconds", int(sleepTime.Seconds()))
+			time.Sleep(sleepTime)
+			sleepTime *= 2
+		} else if statusCode < 200 || statusCode > 299 {
+			return fmt.Errorf("received HTTP response code %d: %s", statusCode, content)
+		} else {
+			break
+		}
+	}
+	return nil
+}
+
+func sendRequest(jsonPayload []byte) (int, []byte, error) {
 	cfg := config.Load()
 	res, err := http.Post(cfg.SlackUrl, "application/json", bytes.NewReader(jsonPayload))
 	if err != nil {
-		return err
+		return 0, nil, err
 	}
 	defer res.Body.Close()
 	content, err := io.ReadAll(res.Body)
 	if err != nil {
-		return fmt.Errorf("error reading HTTP response body: %s", err.Error())
+		return res.StatusCode, nil, fmt.Errorf("error reading HTTP response body: %s", err.Error())
 	}
-	if res.StatusCode < 200 || res.StatusCode > 299 {
-		return fmt.Errorf("received HTTP response code %d: %s", res.StatusCode, content)
-	}
-	return nil
+	return res.StatusCode, content, nil
 }
 
 func chunkMessage(s string) []string {
