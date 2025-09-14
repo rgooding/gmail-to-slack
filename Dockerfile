@@ -12,7 +12,7 @@ RUN go build
 RUN go build cmd/pipemsg/pipemsg.go
 
 
-FROM debian:bookworm
+FROM debian:trixie
 RUN apt-get -y update && apt-get -y install ca-certificates && apt-get -y clean
 COPY --from=builder /workspace/gmail-to-slack /gmail-to-slack
 COPY --from=builder /workspace/pipemsg /pipemsg
